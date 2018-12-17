@@ -72,8 +72,9 @@ case "$1" in
   status)
     status
     ;;
-  retart)
+  restart)
     stop
+    sleep 5
     start
     ;;
   reload)
