@@ -1,0 +1,82 @@
+#!/bin/bash
+### BEGIN INIT INFO
+# Provides:          renjianzhi
+# Required-Start:    $local_fs $network $named $time $syslog
+# Required-Stop:     $local_fs $network $named $time $syslog
+# Default-Start:     3 4 5
+# Default-Stop:      0 1 2 6
+# Description:       rabbitmq service
+### END INIT INFO
+BASEDIR='/data/rabbitmq/sbin'
+START_SCRIPT="$BASEDIR/rabbitmq-server -detached"
+STOP_SCRIPT="$BASEDIR/rabbitmqctl stop"
+STATUS_SCRIPT="$BASEDIR/rabbitmqctl cluster_status"
+STOPAPP_SCRIPT="$BASEDIR/rabbitmqctl stop_app"
+STARTAPP_SCRIPT="$BASEDIR//rabbitmqctl start_app"
+RUNAS=root
+checkservice() {
+    echo 'checking service status ...'
+    ps aux | grep rabbitmq | grep beam.smp |grep -v grep
+    if [ $? -eq 0 ]; then
+        echo 'RabbitMQ Service is Running'
+        return 1
+    fi
+    echo 'RabbitMQ Service is not Running'
+    return 0
+}
+start() {
+    checkservice
+    if [ $? -eq 0 ]; then
+        echo 'Starting RabbitMQ Service'
+        su -c "$START_SCRIPT" $RUNAS
+        if [ $? -eq 0 ];then
+            echo 'RabbitMQ Service started'
+        else
+            echo 'RabbitMQ Service start failed'
+        fi
+    fi
+}
+stop() {
+    checkservice
+    if [ $? -eq 1 ]; then
+        su -c "$STOP_SCRIPT" $RUNAS
+        if [ $? -eq 0 ];then
+            echo 'RabbitMQ Service stoped'
+        else
+            echo 'RabbitMQ Service stop failed'
+        fi
+    fi
+}
+status() {
+    checkservice
+    if [ $? -eq 1 ]; then
+        su -c "$STATUS_SCRIPT" $RUNAS
+    fi
+}
+reload() {
+    checkservice
+    if [ $? -eq 1 ];then
+        su -c "$STOPAPP_SCRIPT" $RUNAS
+        su -c "$STARTAPP_SCRIPT" $RUNAS
+    fi
+}
+case "$1" in
+  start)
+    start
+    ;;
+  stop)
+    stop
+    ;;
+  status)
+    status
+    ;;
+  retart)
+    stop
+    start
+    ;;
+  reload)
+    reload
+    ;;
+  *)
+    echo "Usage: $0 {start|stop|restart|status|reload}"
+esac
