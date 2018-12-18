@@ -30,7 +30,7 @@ case "$1" in
         rabbitmqctl add_user $2 $3
         rabbitmqctl add_vhost $4
         rabbitmqctl set_permissions -p $4 $2 '.*' '.*' '.*'
-        rabbitmqctl set_permissions -p $4 xes_admin '.*' '.*' '.*'
+        rabbitmqctl set_permissions -p $4 admin '.*' '.*' '.*'
         ;;
     *)
         echo "Usage: $0 {au|du|lu|av|dv|lv|sp|ar}"
