@@ -1,0 +1,37 @@
+#!/bin/bash
+RMQ_PATH=/home/rabbitmq/sbin
+export PATH="$PATH:$RMQ_PATH"
+case "$1" in
+    au)
+        rabbitmqctl add_user $2 $3
+        ;;
+    du)
+        rabbitmqctl delete_user $2
+        ;;
+    lu)
+        rabbitmqctl list_users
+        ;;
+    av)
+        rabbitmqctl add_vhost $2
+        ;;
+    dv)
+        rabbitmqctl delete_vhost $2
+        ;;
+    lv)
+        rabbitmqctl list_vhosts
+        ;;
+    sp)
+        rabbitmqctl set_permissions -p $3 $2 '.*' '.*' '.*'
+        ;;
+    lp)
+        rabbitmqctl list_user_permissions $2
+        ;;
+    ar)
+        rabbitmqctl add_user $2 $3
+        rabbitmqctl add_vhost $4
+        rabbitmqctl set_permissions -p $4 $2 '.*' '.*' '.*'
+        rabbitmqctl set_permissions -p $4 xes_admin '.*' '.*' '.*'
+        ;;
+    *)
+        echo "Usage: $0 {au|du|lu|av|dv|lv|sp|ar}"
+esac
